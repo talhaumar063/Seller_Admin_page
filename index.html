@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Admin Page</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Seller Admin Page</h1>
+    </header>
+  
+    <section class="container">
+        <form id="my-form" onsubmit="SaveToCRUDCRUD(event)">
+          <h1>Product Details</h1>
+          <div class="msg"></div>
+          <div>
+            <label for="price">Selling Price:</label>
+            <input type="number" id="price" name="price">
+          </div>
+          <div>
+            <label for="prname">Product Name:</label>
+            <input type="text" id="prname" name="prname">
+          </div>
+          <div>
+            <label for="table">Choose a Category:</label>
+            <select name="table" id="table">
+                <option value="Electronic Items">Electronic Items</option>
+                <option value="Food Items">Food Items</option>
+                <option value="Skincare Items">Skincare Items</option>
+            </select>
+          </div>
+          <input class="btn" type="submit" value="Add Product">
+        </form>
+        <h1>Products</h1>
+        <h4>Electronic Items</h4>
+        <ul id="ElectronicItems"></ul>
+        <h4>Food Items</h4>
+        <ul id="FoodItems"></ul>
+        <h4>Skincare Items</h4>
+        <ul id="SkincareItems"></ul>
+
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+    
+    <script>
+        async function SaveToCRUDCRUD(event){
+            event.preventDefault();
+            let price = event.target.price.value;
+            let prname = event.target.prname.value;
+            let table = event.target.table.value;
+            const Myobj = {
+                price,
+                prname,
+                table
+            }
+            try{ 
+                const res=await axios.post("https://crudcrud.com/api/f1aafa06a17b4fa1a70d645f7ec8f13d/userdata", Myobj)
+                console.log(res);
+                showuser(Myobj)
+            }
+            catch(err){console.log(err)
+        
+        
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded",callme)
+        async function callme(){
+            try{
+                const response= await axios.get("https://crudcrud.com/api/f1aafa06a17b4fa1a70d645f7ec8f13d/userdata");
+                console.log(response)
+                    for(let i=0;i<response.data.length;i++)
+                    {
+                        showuser(response.data[i])
+                    }
+            }
+            catch(err){
+                console.log(err)
+            }       
+        }
+
+        function showuser(Myobj){
+            let parent=""
+            if(Myobj.table == "Electronic Items"){
+                parent = document.getElementById("ElectronicItems");
+            }else if(Myobj.table == "Food Items"){
+                parent = document.getElementById("FoodItems");
+            }else{
+                parent = document.getElementById("SkincareItems");
+            }
+     
+            let child=document.createElement('li')
+            let btn=document.createElement('button')
+            btn.textContent="Delete Order"
+            child.textContent=`${Myobj.price} - ${Myobj.prname} - ${Myobj.table}`
+            child.appendChild(btn)
+            parent.appendChild(child)
+
+
+            btn.onclick=async()=>{
+                try{
+                    const res=await axios.delete(`https://crudcrud.com/api/f1aafa06a17b4fa1a70d645f7ec8f13d/userdata/${Myobj._id}`)
+                    parent.removeChild(child)
+                    console.log(res)
+                }
+                catch(err){console.log(err)}
+            }
+        }
+    </script>
+    
+</body>
+</html>
